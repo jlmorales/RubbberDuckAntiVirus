@@ -1,5 +1,7 @@
 #include "iterator.h"
 
 void main(){
-	iterator("/home/student/Desktop");
+	//iterator("/home/student/Desktop");
+
+	readbytes("/home/jose/Documents/cse331project/whitelist/whitelist.txt");
 }
