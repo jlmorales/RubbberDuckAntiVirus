@@ -5,6 +5,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include "iterator.h"
+#include <openssl/sha.h>
+
+unsigned char *SHA1(const unsigned char *d, unsigned long n,
+                  unsigned char *md);
+
+int SHA1_Init(SHA_CTX *c);
+int SHA1_Update(SHA_CTX *c, const void *data,
+                  unsigned long len);
+int SHA1_Final(unsigned char *md, SHA_CTX *c);
+
   
 int isDirectory(char* path){
     struct stat statbuf;
@@ -90,4 +100,96 @@ void readbytes(char* path){
     fclose(bl);
     fclose(input);
 
+}
+/*
+void hashFile(char *filename){
+    //FILE *f = fopen(fileName,"rb");
+    size_t length = strlen(filename); 
+    unsigned char hash[SHA_DIGEST_LENGTH];  
+    SHA1(filename,length,hash);
+    for(int i=0;i<SHA_DIGEST_LENGTH;i++){
+        printf("%x",hash[i]);
+    }
+
+    printf("\n");
+
+}
+*/
+void findInWhite(char *fileName){
+
+    FILE *wl = fopen("/home/jose/Documents/cse331project/RubbberDuckAntiVirus/whitelistdigest.txt","rt");
+    fseek(wl, 0, SEEK_END);
+    long fsize = ftell(wl);
+    fseek(wl, 0, SEEK_SET);  
+    unsigned char *string = malloc(fsize + 1);
+    fread(string, fsize, 1, wl);
+
+    //hashFile(fileName);
+
+    unsigned char* hash = getFileHash(fileName);
+    int length = strlen(hash);
+
+    //for (int i = 0; i < 100; i++) {
+    //    printf("%x", string[i]);
+    //}
+
+    //printf("\n");
+    //printf("\n");
+
+    //for (int i = 0; i < length; i++) {
+    //    printf("%x", hash[i]);
+    //}
+    printf("\n");
+
+    if((strstr(string,hash))!=NULL){
+                printf("found\n");
+    }
+    else{
+        printf("not found\n");
+    }
+
+}
+
+
+
+unsigned char* getFileHash(char *fileName){
+
+    unsigned char result[2*SHA_DIGEST_LENGTH];
+    unsigned char hash[SHA_DIGEST_LENGTH];
+    int i;
+    FILE *f = fopen(fileName,"rb");
+    SHA_CTX mdContent;
+    int bytes;
+    unsigned char data[1024];
+
+    if(f == NULL){
+        printf("%s couldn't open file\n",fileName);
+        exit(1);
+    }
+
+    SHA1_Init(&mdContent);
+    while((bytes = fread(data, 1, 1024, f)) != 0){
+
+        SHA1_Update(&mdContent, data, bytes);
+    }
+
+    SHA1_Final(hash,&mdContent);
+
+
+    for(i=0;i<SHA_DIGEST_LENGTH;i++){
+        printf("%02x",hash[i]);
+    }
+    fclose(f);
+    unsigned char* fileh = hash;
+    return fileh;
+
+    //printf("\n");
+    /** if you want to see the plain text of the hash */
+    //for(i=0; i < SHA_DIGEST_LENGTH;i++){
+    //    sprintf((char *)&(result[i*2]), "%02x",hash[i]);
+    //}
+
+    //printf("%s\n",result);
+
+    //fclose(f);
 }
