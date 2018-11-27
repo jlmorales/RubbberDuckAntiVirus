@@ -115,23 +115,36 @@ void hashFile(char *filename){
 
 }
 */
-void findInWhite(char *fileName){
 
-    FILE *wl = fopen("/home/jose/Documents/cse331project/RubbberDuckAntiVirus/whitelistdigest.txt","rt");
+void verifyWhitelist(void){
+    char* wlhash = "c697b23d077f5a33e5ed0a881f7dcacad924b503";
+    char* currenthash = getFileHash("/home/jose/Documents/cse331project/RubbberDuckAntiVirus/whitelist.txt");
+    printf("%s\n", currenthash);
+    if (strcmp(wlhash, currenthash) == 0)
+        printf("whitelist is secured");
+    else
+        printf("whitelist is not secured");
+
+}
+
+void findInWhite(char *fileName){
+    verifyWhitelist();
+    FILE *wl = fopen("/home/jose/Documents/cse331project/RubbberDuckAntiVirus/whitelist.txt","rb");
     fseek(wl, 0, SEEK_END);
     long fsize = ftell(wl);
     fseek(wl, 0, SEEK_SET);  
-    unsigned char *string = malloc(fsize + 1);
+    char *string = malloc(fsize + 1);
     fread(string, fsize, 1, wl);
 
     //hashFile(fileName);
 
-    unsigned char* hash = getFileHash(fileName);
+    char* hash = getFileHash(fileName);
     int length = strlen(hash);
 
     //for (int i = 0; i < 100; i++) {
     //    printf("%x", string[i]);
     //}
+    //printf("%s", string);
 
     //printf("\n");
     //printf("\n");
@@ -152,7 +165,7 @@ void findInWhite(char *fileName){
 
 
 
-unsigned char* getFileHash(char *fileName){
+char* getFileHash(char *fileName){
 
     unsigned char result[2*SHA_DIGEST_LENGTH];
     unsigned char hash[SHA_DIGEST_LENGTH];
@@ -175,13 +188,24 @@ unsigned char* getFileHash(char *fileName){
 
     SHA1_Final(hash,&mdContent);
 
-
+    /*
     for(i=0;i<SHA_DIGEST_LENGTH;i++){
         printf("%02x",hash[i]);
     }
+    */
     fclose(f);
     unsigned char* fileh = hash;
-    return fileh;
+
+    for(i=0; i < SHA_DIGEST_LENGTH;i++){
+        sprintf((char *)&(result[i*2]), "%02x",hash[i]);
+    }
+
+    char* string = result;
+    //printf("%s\n",string);
+    //printf("%s\n",result);
+
+    //return fileh;
+    return string;
 
     //printf("\n");
     /** if you want to see the plain text of the hash */
