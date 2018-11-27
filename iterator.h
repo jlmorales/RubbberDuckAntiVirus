@@ -1,4 +1,4 @@
 int iterator(char *path);
 void readbytes(char* path);
-unsigned char* getFileHash(char *fileName);
-void findInWhite(char *fileName);
+char* getFileHash(char *fileName);
+int findInWhite(char *fileName);
