@@ -41,9 +41,11 @@ int iterator(char *path)
             char buffr[500];
             strcpy(buffr,path);
             strcpy((buffr + strlen(path)),"/");
-            strcpy((buffr + strlen(path) + 1),de->d_name);;
+            strcpy((buffr + strlen(path) + 1),de->d_name);
+            
             if(!isDirectory(buffr)){
                 printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
+                readbytes(buffr);
             }
             else{
                 printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
@@ -56,8 +58,12 @@ int iterator(char *path)
 } 
 void readbytes(char* path){
 
-    FILE *in = fopen(path,"r");
-    FILE *bl = fopen("/home/jose/Documents/cse331project/RubbberDuckAntiVirus/blacklist.txt","r");
+    if(findInWhite(path)){
+        return;
+        }
+    else{
+        FILE *in = fopen(path,"r");
+    FILE *bl = fopen("blacklist.txt","r");
 
     fseek(in,0,SEEK_END);
     size_t size = ftell(in);
@@ -71,6 +77,9 @@ void readbytes(char* path){
     size_t i = fread(file_arr,size,1,input);
     //printf("%s\n", file_arr);
     //printf("i=%ld\n", i);
+    
+    
+    
     if(i!=0){
         
         char* bl_line;
@@ -100,6 +109,8 @@ void readbytes(char* path){
     fclose(bl);
     fclose(input);
 
+        }
+    
 }
 /*
 void hashFile(char *filename){
@@ -118,7 +129,7 @@ void hashFile(char *filename){
 
 void verifyWhitelist(void){
     char* wlhash = "c697b23d077f5a33e5ed0a881f7dcacad924b503";
-    char* currenthash = getFileHash("/home/jose/Documents/cse331project/RubbberDuckAntiVirus/whitelist.txt");
+    char* currenthash = getFileHash("whitelist.txt");
     printf("%s\n", currenthash);
     if (strcmp(wlhash, currenthash) == 0)
         printf("whitelist is secured");
@@ -127,9 +138,9 @@ void verifyWhitelist(void){
 
 }
 
-void findInWhite(char *fileName){
+int findInWhite(char *fileName){
     verifyWhitelist();
-    FILE *wl = fopen("/home/jose/Documents/cse331project/RubbberDuckAntiVirus/whitelist.txt","rb");
+    FILE *wl = fopen("whitelist.txt","rb");
     fseek(wl, 0, SEEK_END);
     long fsize = ftell(wl);
     fseek(wl, 0, SEEK_SET);  
@@ -156,9 +167,11 @@ void findInWhite(char *fileName){
 
     if((strstr(string,hash))!=NULL){
                 printf("found\n");
+                return 1;
     }
     else{
         printf("not found\n");
+        return 0;
     }
 
 }

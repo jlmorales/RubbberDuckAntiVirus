@@ -8,7 +8,7 @@
 FILE *listfd;
 void update()
 {
-    printf("Update func reached");
+    printf("Update func reached\n");
     listfd = fopen("whitelist/whitelist.txt", "w+");
 
 }

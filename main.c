@@ -20,6 +20,7 @@ int main(int argc, char **argv){
                     findInWhite("/usr/bin/[");
                     pathname = optarg;
                     printf("%s\n", pathname);
+                    iterator(pathname);
                     break;
                 case 'u':
                     printf("Update func\n");
@@ -28,4 +29,5 @@ int main(int argc, char **argv){
                 default:
                     printf("Arguments: -a (argname) -u");
             }
+            
 }
