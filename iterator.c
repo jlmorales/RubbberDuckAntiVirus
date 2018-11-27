@@ -46,6 +46,7 @@ int iterator(char *path)
             if(!isDirectory(buffr)){
                 printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
                 readbytes(buffr);
+                printf("scanned\n");
             }
             else{
                 printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
@@ -89,17 +90,21 @@ void readbytes(char* path){
         while((bl_line = fgets(bl_line,100,bl))!=NULL){
 
             //printf("while...\n");
+            
+            char* virus_name;
 
             char* virus_sig=strtok(bl_line,", ");
+            virus_name=virus_sig;
+            
             virus_sig = strtok(NULL, "\0");
 
             //printf("virus_sig : %s\n", virus_sig);
 
             if((strstr(file_arr,virus_sig))!=NULL){
-                printf("infected\n");
+                printf("infected with %s\n", virus_name);
             }
             else{
-                printf("not infected\n");
+                printf("not infected with %s\n", virus_name);
             }
         }
     }
@@ -139,7 +144,7 @@ void verifyWhitelist(void){
 }
 
 int findInWhite(char *fileName){
-    verifyWhitelist();
+    //verifyWhitelist();
     FILE *wl = fopen("whitelist.txt","rb");
     fseek(wl, 0, SEEK_END);
     long fsize = ftell(wl);
