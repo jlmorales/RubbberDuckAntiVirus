@@ -11,12 +11,6 @@ int main(int argc, char **argv){
     int arg;
     char *pathname = NULL;
 
-    if (argc < 2 || getopt(argc, argv, "i:o:") == -1)
-        {
-            printf("Arguments:\n");
-            printf("On-Demand Scan: -a (pathname)\n");
-            printf("Update: -u\n");
-        }
     while ((arg = getopt (argc, argv, "a:u")) != -1)
         switch (arg)
             {
