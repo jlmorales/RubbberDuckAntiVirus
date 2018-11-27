@@ -97,6 +97,8 @@ void readbytes(char* path){
             virus_name=virus_sig;
             
             virus_sig = strtok(NULL, "\0");
+            
+            
 
             //printf("virus_sig : %s\n", virus_sig);
 
@@ -106,7 +108,8 @@ void readbytes(char* path){
             }
             else{
                 printf("not infected with %s\n", virus_name);
-                printf("%s", virus_sig);
+                //printf("virus sig: %s", virus_sig);
+                //printf("file: content: %s", file_arr);
             }
         }
     }
