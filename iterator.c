@@ -102,9 +102,11 @@ void readbytes(char* path){
 
             if((strstr(file_arr,virus_sig))!=NULL){
                 printf("infected with %s\n", virus_name);
+                
             }
             else{
                 printf("not infected with %s\n", virus_name);
+                printf("%s", virus_sig);
             }
         }
     }
