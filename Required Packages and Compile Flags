@@ -1,0 +1,7 @@
+-lssl -crypto -lpython2.7
+
+install libssl-dev
+install python-dev
+install python-pip
+pip install pipenv
+pipenv install requests
