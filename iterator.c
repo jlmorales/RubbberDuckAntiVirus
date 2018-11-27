@@ -38,7 +38,8 @@ int iterator(char *path)
         char dDot[] = "..";
         char sDot[] = ".";
         if(!(strcmp(dDot,de->d_name) == 0 || strcmp(sDot,de->d_name) == 0 )){
-            char buffr[500];
+            //char buffr[500];
+            char* buffr = malloc(500);
             strcpy(buffr,path);
             strcpy((buffr + strlen(path)),"/");
             strcpy((buffr + strlen(path) + 1),de->d_name);
@@ -46,7 +47,8 @@ int iterator(char *path)
             if(!isDirectory(buffr)){
                 printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
                 readbytes(buffr);
-                printf("scanned\n");
+                free(buffr);
+                //printf("scanned\n");
             }
             else{
                 printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
@@ -80,7 +82,8 @@ void readbytes(char* path){
     //printf("i=%ld\n", i);
     
     
-    
+    int n_infected=0;
+    int infected=0;
     if(i!=0){
         
         char* bl_line;
@@ -91,10 +94,11 @@ void readbytes(char* path){
 
             //printf("while...\n");
             
-            char* virus_name;
+            //char* virus_name;
 
-            char* virus_sig=strtok(bl_line,", ");
-            virus_name=virus_sig;
+            char* virus_sig=strtok(bl_line,",");
+            //strcpy(virus_name,virus_sig);
+            //virus_name=virus_sig;
             
             virus_sig = strtok(NULL, "\0");
             
@@ -103,21 +107,29 @@ void readbytes(char* path){
             //printf("virus_sig : %s\n", virus_sig);
 
             if((strstr(file_arr,virus_sig))!=NULL){
-                printf("infected with %s\n", virus_name);
+                printf("infected with %s\n", strtok(bl_line,","));
+                infected=1;
                 
             }
             else{
-                printf("not infected with %s\n", virus_name);
+                //printf("not infected\n");// %s\n", virus_name);
                 //printf("virus sig: %s", virus_sig);
                 //printf("file: content: %s", file_arr);
+                n_infected=1;
             }
+            //free(bl_line);
         }
+        if(n_infected && !infected){
+            printf("not infected\n");
+            }
     }
 
     free(file_arr);
+    
     //fclose(in);
     fclose(bl);
     fclose(input);
+    printf("scanned\n");
 
         }
     
@@ -196,7 +208,7 @@ char* getFileHash(char *fileName){
     FILE *f = fopen(fileName,"rb");
     SHA_CTX mdContent;
     int bytes;
-    unsigned char data[1024];
+    unsigned char* data = malloc(1024);//[1024];
 
     if(f == NULL){
         printf("%s couldn't open file\n",fileName);
@@ -228,6 +240,7 @@ char* getFileHash(char *fileName){
     //printf("%s\n",result);
 
     //return fileh;
+    free(data);
     return string;
 
     //printf("\n");
