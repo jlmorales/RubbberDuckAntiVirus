@@ -20,33 +20,60 @@ int SHA1_Final(unsigned char *md, SHA_CTX *c);
 int isDirectory(char* path){
     struct stat statbuf;
     if(stat(path,&statbuf) != 0)
-        return 0;
+        return -1;
     return S_ISDIR(statbuf.st_mode);
 }  
-int iterator(char *path, char* buffr) 
+int iterator(char *path) 
 { 
     struct dirent *de; //STRUCT OF FILE INFORMATION
 
     DIR *dr = opendir(path); //OPEN DIRECTORY
   
     if (dr == NULL)
-    { 
-        printf("Could not open current directory\n" ); 
-        return 0; 
+    {
+		if(isDirectory(path) == 0){
+			printf("%s\n", path);//IF LAST JUST PRINTS OUT NAME
+			int infected = readbytes(path);
+			if(infected>0){
+        
+                    //char name[]="";
+                    char* name = malloc(400);
+                    strcpy(name,path);
+                    strcpy(name+strlen(path),".infected");
+                    printf("old: %s\n",path);
+                    printf("new: %s\n",name);
+                    if(rename(path,name)!=0){
+                        printf("Could not rename!\n");
+                    }
+                    else{
+                        chmod(name,000);
+                        }
+                    free(name);
+			}
+			return 1;
+		}
+		else{
+			printf("Could not open current directory\n" ); 
+			closedir(dr);
+			return 0; 
+		}
     } 
   
     while ((de = readdir(dr)) != NULL){ //ITERATE OVER EACH FILE IN CURRENT DIRECTORY
-        char dDot[] = "..";
-        char sDot[] = ".";
-        if(!(strcmp(dDot,de->d_name) == 0 || strcmp(sDot,de->d_name) == 0 )){
+        if(!(strcmp("..",de->d_name) == 0 || strcmp(".",de->d_name) == 0 )){
             //char buffr[500];
-            //char* buffr = malloc(500);
+            char* buffr = malloc(500);
             strcpy(buffr,path);
             strcpy((buffr + strlen(path)),"/");
             strcpy((buffr + strlen(buffr)),de->d_name);
             
-            if(!isDirectory(buffr)){
-                printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
+            if(isDirectory(buffr)){
+				printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
+                iterator(buffr); //CONTINUES INTO SUB DIRECTORY
+				free(buffr);
+            }
+            else{
+				printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
                 int infected = readbytes(buffr);
                 if(infected>0){
         
@@ -65,12 +92,8 @@ int iterator(char *path, char* buffr)
                     free(name);
                             }
             
-                //free(buffr);
+                free(buffr);
                 //printf("scanned\n");
-            }
-            else{
-                printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
-                iterator(buffr,buffr); //CONTINUES INTO SUB DIRECTORY
             }
         }
     }
