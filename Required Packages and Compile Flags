@@ -1,4 +1,4 @@
--lssl -crypto -lpython2.7
+-lssl -lcrypto -lpython2.7
 
 install libssl-dev
 install python-dev
