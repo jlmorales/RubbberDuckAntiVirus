@@ -46,7 +46,24 @@ int iterator(char *path, char* buffr)
             
             if(!isDirectory(buffr)){
                 printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
-                readbytes(buffr);
+                int infected = readbytes(buffr);
+                if(infected>0){
+        
+                    //char name[]="";
+                    char* name = malloc(400);
+                    strcpy(name,buffr);
+                    strcpy(name+strlen(buffr),".infected");
+                    printf("old: %s\n",buffr);
+                    printf("new: %s\n",name);
+                    if(rename(buffr,name)!=0){
+                        printf("Could not rename!\n");
+                    }
+                    else{
+                        chmod(name,000);
+                        }
+                    free(name);
+                            }
+            
                 //free(buffr);
                 //printf("scanned\n");
             }
@@ -59,21 +76,30 @@ int iterator(char *path, char* buffr)
     closedir(dr);     
     return 1; 
 } 
-void readbytes(char* path){
+int readbytes(char* path){
 
     if(findInWhite(path)){
-        return;
+        return -1;
         }
-    else{
-        FILE *in = fopen(path,"r");
-    FILE *bl = fopen("blacklist.txt","r");
+    else if(findInWhite(path)==2){
+        //printf("Not found in whitelist.\n");
+        return -1;
+        }
+    else
+        {
+        printf("Not found in whitelist.\n");
+        FILE *in = fopen(path,"rb");
+    //FILE *bl = fopen("blacklist.txt","rb");
 
     fseek(in,0,SEEK_END);
     size_t size = ftell(in);
+    
+    fclose(in);
+    
+    FILE *bl = fopen("blacklist.txt","rb");
+    FILE* input = fopen(path,"rb");
 
-    FILE* input = fopen(path,"r");
-
-    char* file_arr = malloc(size);
+    char* file_arr = malloc(size+1);
     //char file_arr[size];
 
     printf("size: %ld\n", size);
@@ -86,7 +112,7 @@ void readbytes(char* path){
     int infected=0;
     if(i!=0){
         
-        char* bl_line;
+        char* bl_line;//=malloc(500);
 
         //printf("if...\n");            
        
@@ -123,16 +149,38 @@ void readbytes(char* path){
             printf("not infected\n");
             }
     }
-
+    
+    
+    fclose(input);
     free(file_arr);
+    fclose(bl);
+    
+    printf("scanned\n");
+    
+    return infected;
+    
+    /*if(infected){
+        
+        char name[sizeof(path)+10];
+        strcpy(name+strlen(path),path);
+        printf("old: %s\n",path);
+        printf("new: %s\n",name);
+        if(rename(path,name)!=0){
+            printf("Could not rename!\n");
+            }
+        }*/
+    //free(path_name);
+
+    
+    //free(bl_line);
     
     //fclose(in);
-    fclose(bl);
-    fclose(input);
-    printf("scanned\n");
-
-        }
     
+    //fclose(input);
+    
+    
+ }
+ 
 }
 /*
 void hashFile(char *filename){
@@ -171,7 +219,11 @@ int findInWhite(char *fileName){
 
     //hashFile(fileName);
 
-    char* hash = getFileHash(fileName);
+    char* hash  = getFileHash(fileName);
+    if (strcmp(hash,"")==0){
+        printf("File is null.\n");
+        return 2;
+        }
     int length = strlen(hash);
 
     //for (int i = 0; i < 100; i++) {
@@ -188,12 +240,14 @@ int findInWhite(char *fileName){
     //printf("\n");
 
     if((strstr(string,hash))!=NULL){
-                printf("found\n");
+                fclose(wl);
+                printf("Found in whitelist.\n");
                 free(string);
                 return 1;
     }
     else{
-        printf("not found\n");
+        fclose(wl);
+        //printf("Not found in whitelist.\n");
         free(string);
         return 0;
     }
@@ -214,7 +268,7 @@ char* getFileHash(char *fileName){
 
     if(f == NULL){
         printf("%s couldn't open file\n",fileName);
-        exit(1);
+        return "";
     }
 
     SHA1_Init(&mdContent);
