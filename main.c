@@ -10,6 +10,7 @@ int main(int argc, char **argv){
 
     int arg;
     char *pathname = NULL;
+    char buffr[500];
 
     while ((arg = getopt (argc, argv, "a:uo")) != -1)
         switch (arg)
@@ -20,7 +21,7 @@ int main(int argc, char **argv){
                     findInWhite("/usr/bin/[");
                     pathname = optarg;
                     printf("%s\n", pathname);
-                    iterator(pathname);
+                    iterator(pathname,buffr);
                     break;
                 case 'u':
                     printf("Update func\n");

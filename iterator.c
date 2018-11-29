@@ -22,7 +22,7 @@ int isDirectory(char* path){
         return 0;
     return S_ISDIR(statbuf.st_mode);
 }  
-int iterator(char *path) 
+int iterator(char *path, char* buffr) 
 { 
     struct dirent *de; //STRUCT OF FILE INFORMATION
 
@@ -39,20 +39,20 @@ int iterator(char *path)
         char sDot[] = ".";
         if(!(strcmp(dDot,de->d_name) == 0 || strcmp(sDot,de->d_name) == 0 )){
             //char buffr[500];
-            char* buffr = malloc(500);
+            //char* buffr = malloc(500);
             strcpy(buffr,path);
             strcpy((buffr + strlen(path)),"/");
-            strcpy((buffr + strlen(path) + 1),de->d_name);
+            strcpy((buffr + strlen(buffr)),de->d_name);
             
             if(!isDirectory(buffr)){
                 printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
                 readbytes(buffr);
-                free(buffr);
+                //free(buffr);
                 //printf("scanned\n");
             }
             else{
                 printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
-                iterator(buffr); //CONTINUES INTO SUB DIRECTORY
+                iterator(buffr,buffr); //CONTINUES INTO SUB DIRECTORY
             }
         }
     }
@@ -185,14 +185,16 @@ int findInWhite(char *fileName){
     //for (int i = 0; i < length; i++) {
     //    printf("%x", hash[i]);
     //}
-    printf("\n");
+    //printf("\n");
 
     if((strstr(string,hash))!=NULL){
                 printf("found\n");
+                free(string);
                 return 1;
     }
     else{
         printf("not found\n");
+        free(string);
         return 0;
     }
 
