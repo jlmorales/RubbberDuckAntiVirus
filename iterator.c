@@ -7,6 +7,7 @@
 #include "iterator.h"
 #include <openssl/sha.h>
 
+
 unsigned char *SHA1(const unsigned char *d, unsigned long n,
                   unsigned char *md);
 
@@ -93,6 +94,7 @@ int readbytes(char* path){
 
     fseek(in,0,SEEK_END);
     size_t size = ftell(in);
+    fseek(in,0,SEEK_SET);
     
     fclose(in);
     
@@ -106,6 +108,7 @@ int readbytes(char* path){
     size_t i = fread(file_arr,size,1,input);
     //printf("%s\n", file_arr);
     //printf("i=%ld\n", i);
+    fclose(input);
     
     
     int n_infected=0;
@@ -151,7 +154,7 @@ int readbytes(char* path){
     }
     
     
-    fclose(input);
+    //fclose(input);
     free(file_arr);
     fclose(bl);
     
@@ -216,6 +219,7 @@ int findInWhite(char *fileName){
     fseek(wl, 0, SEEK_SET);  
     char *string = malloc(fsize + 1);
     fread(string, fsize, 1, wl);
+    fclose(wl);
 
     //hashFile(fileName);
 
@@ -240,13 +244,13 @@ int findInWhite(char *fileName){
     //printf("\n");
 
     if((strstr(string,hash))!=NULL){
-                fclose(wl);
+                //fclose(wl);
                 printf("Found in whitelist.\n");
                 free(string);
                 return 1;
     }
     else{
-        fclose(wl);
+        //fclose(wl);
         //printf("Not found in whitelist.\n");
         free(string);
         return 0;
