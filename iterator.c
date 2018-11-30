@@ -102,11 +102,15 @@ int iterator(char *path)
 } 
 int readbytes(char* path){
 
-    if(findInWhite(path)){
+    int inwhite = findInWhite(path);
+    if(inwhite==1){
         return -1;
         }
-    else if(findInWhite(path)==2){
+    else if(inwhite==2){
         //printf("Not found in whitelist.\n");
+        return -1;
+        }
+    else if(inwhite==3){
         return -1;
         }
     else
@@ -245,6 +249,10 @@ int findInWhite(char *fileName){
     fclose(wl);
 
     //hashFile(fileName);
+    
+    if(strstr(string,fileName)){
+        return 3;
+        }
 
     char* hash  = getFileHash(fileName);
     if (strcmp(hash,"")==0){

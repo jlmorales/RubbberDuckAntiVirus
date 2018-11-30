@@ -1,5 +1,7 @@
 import hashlib, os, sys
 
+bfname = raw_input()
+
 f = open("whitelist.txt", "w")
 
 for root, dirs,files in os.walk('/usr/bin', topdown=True):
@@ -14,3 +16,5 @@ for root, dirs,files in os.walk('/usr/bin', topdown=True):
         #print(hasher.hexdigest())
         f.write(hasher.hexdigest())
         #f.write("")
+f.write(bfname)
+f.close()

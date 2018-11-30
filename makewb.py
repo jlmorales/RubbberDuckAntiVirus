@@ -14,3 +14,4 @@ for root, dirs,files in os.walk('/usr/bin', topdown=True):
         print(hasher.digest())
         f.write(hasher.digest())
         #f.write("")
+        f.close()
