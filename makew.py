@@ -11,6 +11,6 @@ for root, dirs,files in os.walk('/usr/bin', topdown=True):
         with open(str(FileName), 'rb') as afile:
             buf = afile.read()
             hasher.update(buf)
-        print(hasher.hexdigest())
+        #print(hasher.hexdigest())
         f.write(hasher.hexdigest())
         #f.write("")
