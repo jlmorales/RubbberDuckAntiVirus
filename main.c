@@ -14,10 +14,15 @@ int main(int argc, char **argv){
     openlog("vyatta-conntrack", LOG_PID, LOG_USER);
     syslog(LOG_ALERT, "Mid logging");
     syslog(LOG_ALERT, "arg: %s", argv[1]);
+    syslog(LOG_ALERT, "arg %s", argv[2]);
     if (argv[1] != NULL)
     {
-        if (strcmp(argv[1], "-a") == 0)
+            syslog(LOG_ALERT, "pre -d");
+
+        if (strcmp(argv[1], "-d") == 0)
         {
+                syslog(LOG_ALERT, "post -d");
+
                 //iterator("/home/student/Desktop");
                 //readbytes("/home/jose/Documents/cse331project/whitelist/whitelist.txt");
                 findInWhite("/usr/bin/[");
@@ -39,13 +44,15 @@ int main(int argc, char **argv){
         else if (strcmp(argv[1], "-o") == 0)
         {
                 printf("On-Access mode");
+                    syslog(LOG_ALERT, "argon %s", argv[2]);
+
                 syslog(LOG_ALERT, "onaccess logging");
 
         }
         else
         {
                 printf("Arguments:\n");
-                printf("On-Demand Scan: -a (pathname)\n");
+                printf("On-Demand Scan: -dcd .. (pathname)\n");
                 printf("Update: -u\n");
         }
     }

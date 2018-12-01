@@ -14,6 +14,7 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/kmod.h>
+#include <linux/fs_struct.h>
 
 MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
 MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
@@ -65,7 +66,7 @@ static int userspacecall(char *filename)
 }
 */
 
-static int userspacecall (const char *filename)
+static int userspacecall (char *filename)
 {
   char *argv[] = { "/home/student/RubbberDuckAntiVirus/iterator", "-o", filename, NULL};
   static char *envp[] = {
@@ -250,7 +251,7 @@ static asmlinkage long fh_sys_execve(const char __user *filename,
 	long ret;
 	char *kernel_filename;
 
-	kernel_filename = duplicate_filename(filename);
+	kernel_filename = (char*)duplicate_filename(filename);
 
 	userspacecall(kernel_filename);
 
