@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
+#include <syslog.h>
 #include "iterator.h"
 #include <openssl/sha.h>
 
@@ -124,7 +125,7 @@ int readbytes(char* path){
     
     fclose(in);
     
-    FILE *bl = fopen("blacklist.txt","rb");
+    FILE *bl = fopen("/home/student/RubbberDuckAntiVirus/blacklist.txt","rb");
     FILE* input = fopen(path,"rb");
 
     char* file_arr = malloc(size+1);
@@ -225,7 +226,7 @@ void hashFile(char *filename){
 
 void verifyWhitelist(void){
     char* wlhash = "c697b23d077f5a33e5ed0a881f7dcacad924b503";
-    char* currenthash = getFileHash("whitelist.txt");
+    char* currenthash = getFileHash("/home/student/RubbberDuckAntiVirus/whitelist.txt");
     printf("%s\n", currenthash);
     if (strcmp(wlhash, currenthash) == 0)
         printf("whitelist is secured");
@@ -236,7 +237,7 @@ void verifyWhitelist(void){
 
 int findInWhite(char *fileName){
     //verifyWhitelist();
-    FILE *wl = fopen("whitelist.txt","rb");
+    FILE *wl = fopen("/home/student/RubbberDuckAntiVirus/whitelist.txt","rb");
     fseek(wl, 0, SEEK_END);
     long fsize = ftell(wl);
     fseek(wl, 0, SEEK_SET);  
@@ -343,6 +344,7 @@ char* getFileHash(char *fileName){
 
 void notify(char *path)
 {
+    /*
     char command[100], msg[100], file[100];
 
     strcpy(command,"notify-send ");
@@ -354,4 +356,9 @@ void notify(char *path)
     strcat(command,msg);
 
     system(command);
+    */
+        openlog("vyatta-conntrack", LOG_PID, LOG_USER);
+        syslog(LOG_ALERT, "notify func reached");
+        closelog();
+
 }

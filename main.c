@@ -17,8 +17,6 @@ int main(int argc, char **argv){
     syslog(LOG_ALERT, "arg %s", argv[2]);
     if (argv[1] != NULL)
     {
-            syslog(LOG_ALERT, "pre -d");
-
         if (strcmp(argv[1], "-d") == 0)
         {
                 syslog(LOG_ALERT, "post -d");
@@ -29,9 +27,7 @@ int main(int argc, char **argv){
                 if (argv[2] != NULL)
                 {
                 pathname = argv[2];
-                syslog(LOG_ALERT, "preprintf logging");
                 printf("%s\n", pathname);
-                syslog(LOG_ALERT, "postprintf logging");
                 iterator(pathname);
                 }
         }
@@ -43,13 +39,11 @@ int main(int argc, char **argv){
         }
         else if (strcmp(argv[1], "-o") == 0)
         {
-                syslog(LOG_ALERT, "argon %s", argv[2]);
+                syslog(LOG_ALERT, "notified logging");
                 if (argv[2] != NULL)
                 {
                 notify(argv[2]);
-                syslog(LOG_ALERT, "notified");
                 }
-                syslog(LOG_ALERT, "onaccess logging");
 
         }
         else
