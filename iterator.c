@@ -16,7 +16,6 @@ int SHA1_Update(SHA_CTX *c, const void *data,
                   unsigned long len);
 int SHA1_Final(unsigned char *md, SHA_CTX *c);
 
-  
 int isDirectory(char* path){
     struct stat statbuf;
     if(stat(path,&statbuf) != 0)
@@ -31,10 +30,10 @@ int iterator(char *path)
   
     if (dr == NULL)
     {
-		if(isDirectory(path) == 0){
-			printf("%s\n", path);//IF LAST JUST PRINTS OUT NAME
-			int infected = readbytes(path);
-			if(infected>0){
+        if(isDirectory(path) == 0){
+            printf("%s\n", path);//IF LAST JUST PRINTS OUT NAME
+            int infected = readbytes(path);
+            if(infected>0){
         
                     //char name[]="";
                     char* name = malloc(400);
@@ -49,14 +48,14 @@ int iterator(char *path)
                         chmod(name,000);
                         }
                     free(name);
-			}
-			return 1;
-		}
-		else{
-			printf("Could not open current directory\n" ); 
-			closedir(dr);
-			return 0; 
-		}
+            }
+            return 1;
+        }
+        else{
+            printf("Could not open current directory\n" ); 
+            closedir(dr);
+            return 0; 
+        }
     } 
   
     while ((de = readdir(dr)) != NULL){ //ITERATE OVER EACH FILE IN CURRENT DIRECTORY
@@ -68,12 +67,12 @@ int iterator(char *path)
             strcpy((buffr + strlen(buffr)),de->d_name);
             
             if(isDirectory(buffr)){
-				printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
+                printf("%s\n", buffr); //BUILDS PREVIOUS ABSOLUE PATH BASED ON PATH OF OTHER
                 iterator(buffr); //CONTINUES INTO SUB DIRECTORY
-				free(buffr);
+                free(buffr);
             }
             else{
-				printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
+                printf("%s\n", de->d_name);//IF LAST JUST PRINTS OUT NAME
                 int infected = readbytes(buffr);
                 if(infected>0){
         
@@ -163,7 +162,6 @@ int readbytes(char* path){
             //printf("virus_sig : %s\n", virus_sig);
 
             if((strstr(file_arr,virus_sig))!=NULL){
-                printf("infected with %s\n", strtok(bl_line,","));
                 infected=1;
                 
             }
@@ -221,9 +219,7 @@ void hashFile(char *filename){
     for(int i=0;i<SHA_DIGEST_LENGTH;i++){
         printf("%x",hash[i]);
     }
-
     printf("\n");
-
 }
 */
 
@@ -343,4 +339,19 @@ char* getFileHash(char *fileName){
     //printf("%s\n",result);
 
     //fclose(f);
+}
+
+void notify(char *path)
+{
+    char command[100], msg[100], file[100];
+
+    strcpy(command,"notify-send ");
+    //strcpy(file, path);
+    strcpy(msg, "\"");
+    strcat(msg, path);
+    strcat(msg, ": Virus Infected\"");
+    //strcpy(msg,"\"Virus Infected\"");
+    strcat(command,msg);
+
+    system(command);
 }

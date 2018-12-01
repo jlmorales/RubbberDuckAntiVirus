@@ -43,9 +43,12 @@ int main(int argc, char **argv){
         }
         else if (strcmp(argv[1], "-o") == 0)
         {
-                printf("On-Access mode");
-                    syslog(LOG_ALERT, "argon %s", argv[2]);
-
+                syslog(LOG_ALERT, "argon %s", argv[2]);
+                if (argv[2] != NULL)
+                {
+                notify(argv[2]);
+                syslog(LOG_ALERT, "notified");
+                }
                 syslog(LOG_ALERT, "onaccess logging");
 
         }
