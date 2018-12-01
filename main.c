@@ -23,7 +23,7 @@ int main(int argc, char **argv){
                 findInWhite("/usr/bin/[");
                 if (argv[2] != NULL)
                 {
-                pathname = optarg;
+                pathname = argv[2];
                 syslog(LOG_ALERT, "preprintf logging");
                 printf("%s\n", pathname);
                 syslog(LOG_ALERT, "postprintf logging");
