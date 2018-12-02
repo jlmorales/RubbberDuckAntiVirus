@@ -258,18 +258,28 @@ static asmlinkage long fh_sys_execve(const char __user *filename,
 	char *path;
 	struct path pwd;
 	char buff[200];
-	
+	char *duplp;
+	char duplbuff[200];
+	char *abspath;
+
 	kernel_filename = (char*)duplicate_filename(filename);
 
 	if (kernel_filename[0] == '.' && kernel_filename[1] == '/')
 	{
 		get_fs_pwd(current->fs, &pwd);
-		path = dentry_path_raw(pwd.dentry,buff,201);
+		path = dentry_path_raw(pwd.dentry,buff,199);
 		printk("pwd: %s\n", path);
-	}
-	
-	userspacecall(kernel_filename);
+		strcpy(duplbuff, kernel_filename+1);
+		duplp = duplbuff;
+		abspath = strcat(path, (const char*)duplp);
+		printk("abspath: %s\n", abspath);
+		userspacecall(abspath);
 
+	}
+	else
+	{
+	userspacecall(kernel_filename);
+	}
 
 	pr_info("execve() before: %s\n", kernel_filename);
 	printk("My current process id/pid is %d\n", current->pid);
