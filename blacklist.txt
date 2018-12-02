@@ -1,4 +1,3 @@
 backdoor-1,h°h@Q
 virus-1,¶L$òÓèé
 backdoor-2,h°h@Q
-notify,ELF
