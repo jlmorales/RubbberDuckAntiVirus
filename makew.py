@@ -1,10 +1,10 @@
-import hashlib, os, sys
+import hashlib, os, sys, itertools
 
 bfname = raw_input()
 
 f = open("whitelist.txt", "w")
 
-for root, dirs,files in os.walk('/usr/bin', topdown=True):
+for root, dirs,files in itertools.chain(os.walk('/usr/bin', topdown=True),os.walk('/bin', topdown=True)):
     for name in files:
         #print(os.path.join(root, name))
         FileName = (os.path.join(root, name))
