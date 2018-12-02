@@ -255,9 +255,19 @@ static asmlinkage long fh_sys_execve(const char __user *filename,
 {
 	long ret;
 	char *kernel_filename;
-
+	char *path;
+	struct path pwd;
+	char buff[200];
+	
 	kernel_filename = (char*)duplicate_filename(filename);
 
+	if (kernel_filename[0] == '.' && kernel_filename[1] == '/')
+	{
+		get_fs_pwd(current->fs, &pwd);
+		path = dentry_path_raw(pwd.dentry,buff,201);
+		printk("pwd: %s\n", path);
+	}
+	
 	userspacecall(kernel_filename);
 
 
