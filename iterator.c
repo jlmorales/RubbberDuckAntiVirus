@@ -49,6 +49,7 @@ int iterator(char *path)
                         chmod(name,000);
                         }
                     free(name);
+                    return 2;
             }
             return 1;
         }
@@ -357,8 +358,14 @@ void notify(char *path)
 
     system(command);
     */
-        openlog("vyatta-conntrack", LOG_PID, LOG_USER);
-        syslog(LOG_ALERT, "notify func reached");
-        closelog();
+    openlog("vyatta-conntrack", LOG_PID, LOG_USER);
+    syslog(LOG_ALERT, "notify func reached");
+    int infected;
+    infected = iterator(path);
+    if (infected == 2)
+    {
+        syslog(LOG_ALERT, "infected!");
+    }
+    closelog();
 
 }
