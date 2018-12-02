@@ -1,0 +1,1 @@
+cmd_/home/student/RubbberDuckAntiVirus/on-access/ftrace_hook.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/student/RubbberDuckAntiVirus/on-access/ftrace_hook.ko /home/student/RubbberDuckAntiVirus/on-access/ftrace_hook.o /home/student/RubbberDuckAntiVirus/on-access/ftrace_hook.mod.o ;  true
