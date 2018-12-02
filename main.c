@@ -39,6 +39,7 @@ int main(int argc, char **argv){
         }
         else if (strcmp(argv[1], "-o") == 0)
         {
+                findInWhite("/usr/bin/[");
                 syslog(LOG_ALERT, "notified logging");
                 if (argv[2] != NULL)
                 {
