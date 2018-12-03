@@ -2,6 +2,8 @@
  * Hooking kernel functions using ftrace framework
  *
  * Copyright (c) 2018 ilammy
+ *
+ * Modified by RubbberDuckAntiVirus team.
  */
 
 #define pr_fmt(fmt) "ftrace_hook: " fmt
@@ -19,8 +21,8 @@
 #include <linux/syscalls.h>
 #include <linux/sched.h>
 
-MODULE_DESCRIPTION("Example module hooking clone() and execve() via ftrace");
-MODULE_AUTHOR("ilammy <a.lozovsky@gmail.com>");
+MODULE_DESCRIPTION("ftrace hook onto syscalls that call the RubbberDuckAntiVirus from userspace");
+MODULE_AUTHOR("RubbberDuckAntiVirus and ilammy <a.lozovsky@gmail.com>");
 MODULE_LICENSE("GPL");
 
 /*
@@ -56,19 +58,10 @@ struct ftrace_hook {
 	struct ftrace_ops ops;
 };
 
-/*
-static int userspacecall(char *filename)
-{
-  char *argv[] = {"/home/student/RubbberDuckAntiVirus/iterator", "-a", "/home/student/RubbberDuckAntiVirus/iterator/blacklist.txt", NULL};
-  static char *envp[] = {
-        "HOME=/",
-        "TERM=linux",
-        "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/home/student/RubbberDuckAntiVirus", NULL };
-
-  return call_usermodehelper( argv[0], argv, envp, UMH_WAIT_PROC );
-}
-*/
-
+/**
+ * Calls RubbberDuckAntiVirus from userspace with the -o argument
+ * and a path to the file to be scanned.
+ */
 static int userspacecall (char *filename)
 {
   char *argv[] = { "/home/student/RubbberDuckAntiVirus/iterator", "-o", filename, NULL};
@@ -245,9 +238,38 @@ static char *duplicate_filename(const char __user *filename)
 
 asmlinkage int (*getuid_call)(void);
 
+
+/**
+ * The sys_open calls are commented out due to issues we ran into testing them on our machines.
+ *
+ *
+static asmlinkage int (*real_sys_open)(const char __user *filename, int flags, int mode);
+
+static asmlinkage int fh_sys_open(const char __user *filename, int flags, int mode)
+{
+	long ret;
+	char *kernel_filename;
+
+	kernel_filename = duplicate_filename(filename);
+
+	pr_info("open() before: %s\n", kernel_filename);
+
+	kfree(kernel_filename);
+	ret = real_sys_open(filename, flags, mode);
+
+	return ret;
+}
+**/
+
 static asmlinkage long (*real_sys_execve)(const char __user *filename,
 		const char __user *const __user *argv,
 		const char __user *const __user *envp);
+
+/**
+ * Our hooked function that sys_execve now points to.
+ * This calls the RubbberDuckAntiVirus before every sys_execve call made.
+ * In addition, if given a relative pathname from the sys_execve filename, this will turn it into an absolute path.
+ */
 
 static asmlinkage long fh_sys_execve(const char __user *filename,
 		const char __user *const __user *argv,
@@ -281,15 +303,13 @@ static asmlinkage long fh_sys_execve(const char __user *filename,
 	userspacecall(kernel_filename);
 	}
 
-	pr_info("execve() before: %s\n", kernel_filename);
-	printk("My current process id/pid is %d\n", current->pid);
-    printk("My current real id/pid is %u\n", current_uid().val);
+	pr_info("execve() call: %s\n", kernel_filename);
+	//printk("My current process id/pid is %d\n", current->pid);
+    //printk("My current real id/pid is %u\n", current_uid().val);
 
 	kfree(kernel_filename);
 
 	ret = real_sys_execve(filename, argv, envp);
-
-	//pr_info("execve() after: %ld\n", ret);
 
 	return ret;
 }
@@ -303,6 +323,7 @@ static asmlinkage long fh_sys_execve(const char __user *filename,
 
 static struct ftrace_hook demo_hooks[] = {
 	HOOK("sys_execve", fh_sys_execve, &real_sys_execve),
+	//HOOK("sys_open", fh_sys_open, &real_sys_open),
 };
 
 static int fh_init(void)

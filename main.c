@@ -8,51 +8,60 @@
 #include "update.h"
 #include "iterator.h"
 
+/**
+ *  Main file for our RubbberDuckAntiVirus program.
+ *  This program must be ran using root privileges for full functionality.
+ */
 int main(int argc, char **argv){
     int arg;
     char *pathname = NULL;
-    openlog("vyatta-conntrack", LOG_PID, LOG_USER);
-    syslog(LOG_ALERT, "Mid logging");
-    syslog(LOG_ALERT, "arg: %s", argv[1]);
-    syslog(LOG_ALERT, "arg %s", argv[2]);
     if (argv[1] != NULL)
     {
         if (strcmp(argv[1], "-d") == 0)
         {
-                syslog(LOG_ALERT, "post -d");
-
-                //iterator("/home/student/Desktop");
-                //readbytes("/home/jose/Documents/cse331project/whitelist/whitelist.txt");
-                findInWhite("/usr/bin/[");
-                if (argv[2] != NULL)
-                {
-                pathname = argv[2];
-                printf("%s\n", pathname);
-                iterator(pathname);
-                }
+            findInWhite("/usr/bin/[");
+            if (argv[2] != NULL)
+            {
+            pathname = argv[2];
+            printf("%s\n", pathname);
+            iterator(pathname);
+            }
         }
         else if (strcmp(argv[1], "-u") == 0)
         {                
-                printf("Update func\n");
-                syslog(LOG_ALERT, "Update logging");
-                update();                   
+            update();                   
+        }
+        else if (strcmp(argv[1], "-c") == 0)
+        {
+            system("insmod on-access/ftrace_hook.ko");
+        }
+        else if (strcmp(argv[1], "-r") == 0)
+        {
+            system("rmmod on-access/ftrace_hook.ko");
         }
         else if (strcmp(argv[1], "-o") == 0)
         {
-                findInWhite("/usr/bin/[");
-                syslog(LOG_ALERT, "notified logging");
-                if (argv[2] != NULL)
-                {
-                notify(argv[2]);
-                }
-
+            findInWhite("/usr/bin/[");
+            if (argv[2] != NULL)
+            {
+            notify(argv[2]);
+            }
         }
         else
         {
-                printf("Arguments:\n");
-                printf("On-Demand Scan: -dcd .. (pathname)\n");
-                printf("Update: -u\n");
+            printf("Usage:\n");
+            printf("On-Demand Scan: -d (pathname)\n");
+            printf("Update: -u\n");
+            printf("Activate On-Access Scan: -c\n");
+            printf("Deactivate On-Access Scan: -r\n");
         }
     }
-    closelog();   
+        else
+        {
+            printf("Usage:\n");
+            printf("On-Demand Scan: -d (pathname)\n");
+            printf("Update: -u\n");
+            printf("Activate On-Access Scan: -c\n");
+            printf("Deactivate On-Access Scan: -r\n");
+        }
 }

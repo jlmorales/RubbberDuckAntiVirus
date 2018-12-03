@@ -4,10 +4,10 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
+#include <syslog.h>
 #include <unistd.h>
 #include "iterator.h"
 #include <openssl/sha.h>
-
 
 unsigned char *SHA1(const unsigned char *d, unsigned long n,
                   unsigned char *md);
@@ -17,6 +17,7 @@ int SHA1_Update(SHA_CTX *c, const void *data,
                   unsigned long len);
 int SHA1_Final(unsigned char *md, SHA_CTX *c);
 
+  
 int isDirectory(char* path){
     struct stat statbuf;
     if(stat(path,&statbuf) != 0)
@@ -49,11 +50,8 @@ int iterator(char *path)
                         chmod(name,000);
                         }
                     free(name);
-                return 2;
+                    return 2;
             }
-            else{
-                printf("Not infected at all bla bla bla...\n");
-                }
             return 1;
         }
         else{
@@ -68,9 +66,7 @@ int iterator(char *path)
             //char buffr[500];
             char* buffr = malloc(500);
             strcpy(buffr,path);
-            if(strcmp(path,"/")!=0){
-                strcpy((buffr + strlen(path)),"/");
-                }
+            strcpy((buffr + strlen(path)),"/");
             strcpy((buffr + strlen(buffr)),de->d_name);
             
             if(isDirectory(buffr)){
@@ -107,10 +103,6 @@ int iterator(char *path)
     return 1; 
 } 
 int readbytes(char* path){
-    
-    /*if(strstr(path,"/dev/")!=NULL){
-        return -1;
-        }*/
 
     int inwhite = findInWhite(path);
     if(inwhite==1){
@@ -131,15 +123,14 @@ int readbytes(char* path){
 
     fseek(in,0,SEEK_END);
     size_t size = ftell(in);
-    //fseek(in,0,SEEK_SET);
-    rewind(in);
+    fseek(in,0,SEEK_SET);
     
     fclose(in);
     
     FILE *bl = fopen("/home/student/RubbberDuckAntiVirus/blacklist.txt","r");
     FILE* input = fopen(path,"rb");
 
-    unsigned char* file_arr = (char *)malloc((size+1)*sizeof(unsigned char));
+    char* file_arr = malloc(size+1);
     //char file_arr[size];
 
     printf("size: %ld\n", size);
@@ -153,7 +144,7 @@ int readbytes(char* path){
     int infected=0;
     if(i!=0){
         
-        unsigned char* bl_line;//=malloc(500);
+        char* bl_line;//=malloc(500);
 
         //printf("if...\n");            
        
@@ -167,19 +158,19 @@ int readbytes(char* path){
             //strcpy(virus_name,virus_sig);
             //virus_name=virus_sig;
             
-            virus_sig = strtok(NULL, "\n");
+            virus_sig = strtok(NULL, "\0");
             
             
 
             //printf("virus_sig : %s\n", virus_sig);
 
             if((strstr(file_arr,virus_sig))!=NULL){
-                printf("infected with %s\n",strtok(bl_line,","));
+                printf("infected with %s\n", strtok(bl_line,","));
                 infected=1;
                 
             }
             else{
-                //printf("infected with %s\n",strtok(bl_line,","));// %s\n", virus_name);
+                //printf("not infected\n");// %s\n", virus_name);
                 //printf("virus sig: %s", virus_sig);
                 //printf("file: content: %s", file_arr);
                 n_infected=1;
@@ -254,7 +245,6 @@ int findInWhite(char *fileName){
     long fsize = ftell(wl);
     fseek(wl, 0, SEEK_SET);  
     char *string = malloc(fsize + 1);
-
     fread(string, fsize, 1, wl);
     fclose(wl);
 
