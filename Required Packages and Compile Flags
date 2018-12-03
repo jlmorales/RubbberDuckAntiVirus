@@ -1,8 +1,0 @@
--lssl -lcrypto -lpython2.7
-
-install libssl-dev
-sudo apt-get install linux-headers-$(uname -r)
-install python-dev
-install python-pip
-pip install pipenv
-pipenv install requests
