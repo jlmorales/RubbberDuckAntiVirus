@@ -69,7 +69,6 @@ static int userspacecall (char *filename)
         "HOME=/",
         "TERM=linux",
         "PATH=/sbin:/bin:/usr/sbin:/usr/bin", NULL };
-        	printk("Exciting: %s\n", filename);
   
   return call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC);
 }
@@ -290,11 +289,9 @@ static asmlinkage long fh_sys_execve(const char __user *filename,
 	{
 		get_fs_pwd(current->fs, &pwd);
 		path = dentry_path_raw(pwd.dentry,buff,199);
-		printk("pwd: %s\n", path);
 		strcpy(duplbuff, kernel_filename+1);
 		duplp = duplbuff;
 		abspath = strcat(path, (const char*)duplp);
-		printk("abspath: %s\n", abspath);
 		userspacecall(abspath);
 
 	}

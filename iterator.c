@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
+#include <syslog.h>
 #include <unistd.h>
 #include "iterator.h"
 #include <openssl/sha.h>
@@ -107,17 +108,11 @@ int iterator(char *path)
     return 1; 
 } 
 int readbytes(char* path){
-    
-    /*if(strstr(path,"/dev/")!=NULL){
-        return -1;
-        }*/
-
     int inwhite = findInWhite(path);
     if(inwhite==1){
         return -1;
         }
     else if(inwhite==2){
-        //printf("Not found in whitelist.\n");
         return -1;
         }
     else if(inwhite==3){
@@ -127,11 +122,9 @@ int readbytes(char* path){
         {
         printf("Not found in whitelist.\n");
         FILE *in = fopen(path,"rb");
-    //FILE *bl = fopen("blacklist.txt","rb");
 
     fseek(in,0,SEEK_END);
     size_t size = ftell(in);
-    //fseek(in,0,SEEK_SET);
     rewind(in);
     
     fclose(in);
@@ -140,12 +133,9 @@ int readbytes(char* path){
     FILE* input = fopen(path,"rb");
 
     unsigned char* file_arr = (char *)malloc((size+1)*sizeof(unsigned char));
-    //char file_arr[size];
 
     printf("size: %ld\n", size);
     size_t i = fread(file_arr,size,1,input);
-    //printf("%s\n", file_arr);
-    //printf("i=%ld\n", i);
     fclose(input);
     
     
@@ -153,25 +143,14 @@ int readbytes(char* path){
     int infected=0;
     if(i!=0){
         
-        unsigned char* bl_line;//=malloc(500);
-
-        //printf("if...\n");            
+        unsigned char* bl_line;         
        
         while((bl_line = fgets(bl_line,100,bl))!=NULL){
 
-            //printf("while...\n");
-            
-            //char* virus_name;
-
             char* virus_sig=strtok(bl_line,",");
-            //strcpy(virus_name,virus_sig);
-            //virus_name=virus_sig;
             
             virus_sig = strtok(NULL, "\n");
             
-            
-
-            //printf("virus_sig : %s\n", virus_sig);
 
             if((strstr(file_arr,virus_sig))!=NULL){
                 printf("infected with %s\n",strtok(bl_line,","));
@@ -179,62 +158,24 @@ int readbytes(char* path){
                 
             }
             else{
-                //printf("infected with %s\n",strtok(bl_line,","));// %s\n", virus_name);
-                //printf("virus sig: %s", virus_sig);
-                //printf("file: content: %s", file_arr);
                 n_infected=1;
             }
-            //free(bl_line);
+
         }
         if(n_infected && !infected){
             printf("not infected\n");
             }
     }
     
-    
-    //fclose(input);
     free(file_arr);
     fclose(bl);
     
     printf("scanned\n");
     
     return infected;
-    
-    /*if(infected){
-        
-        char name[sizeof(path)+10];
-        strcpy(name+strlen(path),path);
-        printf("old: %s\n",path);
-        printf("new: %s\n",name);
-        if(rename(path,name)!=0){
-            printf("Could not rename!\n");
-            }
-        }*/
-    //free(path_name);
-
-    
-    //free(bl_line);
-    
-    //fclose(in);
-    
-    //fclose(input);
-    
-    
  }
  
 }
-/*
-void hashFile(char *filename){
-    //FILE *f = fopen(fileName,"rb");
-    size_t length = strlen(filename); 
-    unsigned char hash[SHA_DIGEST_LENGTH];  
-    SHA1(filename,length,hash);
-    for(int i=0;i<SHA_DIGEST_LENGTH;i++){
-        printf("%x",hash[i]);
-    }
-    printf("\n");
-}
-*/
 
 void verifyWhitelist(void){
     char* wlhash = "c697b23d077f5a33e5ed0a881f7dcacad924b503";
@@ -248,7 +189,6 @@ void verifyWhitelist(void){
 }
 
 int findInWhite(char *fileName){
-    //verifyWhitelist();
     FILE *wl = fopen("/home/student/RubbberDuckAntiVirus/whitelist.txt","rb");
     fseek(wl, 0, SEEK_END);
     long fsize = ftell(wl);
@@ -257,8 +197,6 @@ int findInWhite(char *fileName){
 
     fread(string, fsize, 1, wl);
     fclose(wl);
-
-    //hashFile(fileName);
     
     if(strstr(string,fileName)){
         return 3;
@@ -271,28 +209,12 @@ int findInWhite(char *fileName){
         }
     int length = strlen(hash);
 
-    //for (int i = 0; i < 100; i++) {
-    //    printf("%x", string[i]);
-    //}
-    //printf("%s", string);
-
-    //printf("\n");
-    //printf("\n");
-
-    //for (int i = 0; i < length; i++) {
-    //    printf("%x", hash[i]);
-    //}
-    //printf("\n");
-
     if((strstr(string,hash))!=NULL){
-                //fclose(wl);
                 printf("Found in whitelist.\n");
                 free(string);
                 return 1;
     }
     else{
-        //fclose(wl);
-        //printf("Not found in whitelist.\n");
         free(string);
         return 0;
     }
@@ -324,11 +246,6 @@ char* getFileHash(char *fileName){
 
     SHA1_Final(hash,&mdContent);
 
-    /*
-    for(i=0;i<SHA_DIGEST_LENGTH;i++){
-        printf("%02x",hash[i]);
-    }
-    */
     fclose(f);
     unsigned char* fileh = hash;
 
@@ -337,27 +254,16 @@ char* getFileHash(char *fileName){
     }
 
     char* string = result;
-    //printf("%s\n",string);
-    //printf("%s\n",result);
-
-    //return fileh;
     free(data);
     return string;
-
-    //printf("\n");
-    /** if you want to see the plain text of the hash */
-    //for(i=0; i < SHA_DIGEST_LENGTH;i++){
-    //    sprintf((char *)&(result[i*2]), "%02x",hash[i]);
-    //}
-
-    //printf("%s\n",result);
-
-    //fclose(f);
 }
 
 void notify(char *path)
 {
     char command[100], msg[100], file[100];
+
+    openlog("vyatta-conntrack", LOG_PID, LOG_USER);
+
 
     int infected;
     infected = iterator(path);
@@ -365,17 +271,18 @@ void notify(char *path)
     if (infected == 2)
     {
     strcpy(command,"notify-send ");
-    //strcpy(file, path);
+    syslog(LOG_ALERT, "%s is Infected!", path);
     strcpy(msg, "\"");
     strcat(msg, path);
     strcat(msg, ": Virus Infected\"");
-    //strcpy(msg,"\"Virus Infected\"");
     strcat(command,msg);
-
     system(command);
     char *arguments[] = {"sh", "/home/student/RubbberDuckAntiVirus/notify.sh", command};
     execv("/bin/sh", arguments);
-    //system("/home/student/RubbberDuckAntiVirus/not.sh");
+    }
+    else
+    {
+        syslog(LOG_ALERT, "%s is not infected", path);
     }
 
 }
