@@ -14,5 +14,5 @@ void update()
     PyRun_SimpleString("sys.path.append(\".\")");
     PyRun_SimpleString("import update");
     Py_Finalize();
-    printf("Update script called");
+    printf("Update script called\n");
 }
