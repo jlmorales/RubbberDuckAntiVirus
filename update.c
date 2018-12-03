@@ -6,14 +6,13 @@
 
 #include "update.h"
 
-FILE *listfd;
 void update()
 {
-    printf("Update func reached");
     Py_Initialize();
     PyRun_SimpleString("import sys");
     PyRun_SimpleString("import requests");
     PyRun_SimpleString("sys.path.append(\".\")");
     PyRun_SimpleString("import update");
     Py_Finalize();
+    printf("Update script called");
 }
