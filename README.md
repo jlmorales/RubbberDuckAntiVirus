@@ -15,9 +15,9 @@ pipenv install requests
 
 **Compilation:**
 
-Run bash make.sh inside /home/student/RubbberDuckAntiVirus.
+Run bash make.sh inside /home/student/RubbberDuckAntiVirus, which will create the Rubberduck executable.
 
 **Execution:**
 
-It is recommmended to run ./iterator as the root user.
+It is recommmended to run ./Rubberduck as the root user.
 
